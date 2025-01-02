@@ -7,21 +7,31 @@ let formData = {
 
 const fillFormFields = () => {
   try {
-    if (localStorage.length === 0) {
+    const formDataFromsLS = localStorage.getItem('feedback-form-state');
+
+    if (!formDataFromsLS) {
       return;
     }
-    const formDataFromLS = JSON.parse(localStorage.getItem('feedback-form-state'));
-    formData = formDataFromLS;
-    for (const key in formDataFromLS) {
-      feedbackForm.elements[key].value = formDataFromLS[key];
+
+    formData = JSON.parse(formDataFromsLS);
+
+    for (const key in formData) {
+      if (feedbackForm.elements[key]) {
+        feedbackForm.elements[key].value = formData[key];
+      }
     }
-  } catch (err) {
+  }
+  catch (err) {
     console.log(err);
   }
 };
 
+
+fillFormFields();
+
 const onFormInput = event => {
   const { name, value } = event.target;
+
   if (name in formData) {
     formData[name] = value;
     localStorage.setItem('feedback-form-state', JSON.stringify(formData));
@@ -35,13 +45,14 @@ const onFormSubmit = event => {
     alert('Fill please all fields');
     return;
   }
-   
+
   console.log(formData);
 
   formData = { email: '', message: '' };
   localStorage.removeItem('feedback-form-state');
   feedbackForm.reset();
-}; 
+};
+
 
 
 feedbackForm.addEventListener('input', onFormInput);
